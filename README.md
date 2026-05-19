@@ -186,6 +186,7 @@ Tests are located in `tests/` and use Jest + Supertest.
 MIT - DevCraft Academy Team Project
 
 # Project role distribution
+
 - Thomas: Deployment Lead
 - Yazan: Testing and Quality Lead
 - Viktor: Documentation Lead

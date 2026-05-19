@@ -17,15 +17,15 @@ app.get('/health', (req, res) => {
 const boardsRoute = require('./routes/boards');
 const tasksRoute = require('./routes/tasks');
 
-app.use('/boards', boardsRoute)
-app.use('/tasks', tasksRoute)
+app.use('/boards', boardsRoute);
+app.use('/tasks', tasksRoute);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
     error: 'Something went wrong!',
-    message: process.env.NODE_ENV === 'development' ? err.message : undefined
+    message: process.env.NODE_ENV === 'development' ? err.message : undefined,
   });
 });
 

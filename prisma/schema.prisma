@@ -10,26 +10,23 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Board {
-  id          String   @id @default(uuid())
-  name        String
-  description String?
-  status      String   @default("active")
-  owner       String?
-  tasks       Task[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
+// TODO: Define your Board and Task models here
+// Teams will implement the schema in Day 2
 
-model Task {
-  id          String   @id @default(uuid())
-  title       String
-  description String?
-  status      String   @default("todo")
-  priority    String   @default("medium")
-  dueDate     DateTime?
-  boardId     String
-  board       Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
+// Example structure (to be implemented):
+// model Board {
+//   id        String   @id @default(uuid())
+//   name      String
+//   tasks     Task[]
+//   createdAt DateTime @default(now())
+// }
+
+// model Task {
+//   id          String   @id @default(uuid())
+//   title       String
+//   description String?
+//   status      String   // "todo" | "in_progress" | "done"
+//   boardId     String
+//   board       Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
+//   createdAt   DateTime @default(now())
+// }

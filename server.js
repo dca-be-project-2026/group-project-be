@@ -14,10 +14,11 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'Task Board API is running' });
 });
 
-// TODO: Register route handlers here
-// Example:
-// const boardsRouter = require('./routes/boards');
-// app.use('/boards', boardsRouter);
+const boardsRoute = require('./routes/boards');
+const tasksRoute = require('./routes/tasks');
+
+app.use('/boards', boardsRoute)
+app.use('/tasks', tasksRoute)
 
 // Error handling middleware
 app.use((err, req, res, next) => {

@@ -63,6 +63,18 @@ Backend API for a Kanban board (like Trello/Linear). Built by your team as a 3-w
 
 ## Development
 
+### Code Quality Checks
+
+Before creating a merge request, make sure to run the following commands at least once to ensure code consistency and avoid linting or formatting issues:
+
+```bash
+npm run lint
+npm run lint:fix
+npm run format
+```
+
+These commands help catch potential issues early and keep the codebase clean and consistent across all contributors.
+
 ### Commands
 
 ```bash
@@ -186,6 +198,7 @@ Tests are located in `tests/` and use Jest + Supertest.
 MIT - DevCraft Academy Team Project
 
 # Project role distribution
+
 - Thomas: Deployment Lead
 - Yazan: Testing and Quality Lead
 - Viktor: Documentation Lead

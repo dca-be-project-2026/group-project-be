@@ -11,26 +11,44 @@
     "test:coverage": "jest --coverage",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "lint": "eslint . --ext .js",
+    "lint:fix": "eslint . --ext .js --fix",
+    "format": "prettier --write ."
   },
-  "keywords": ["express", "prisma", "rest-api", "kanban"],
+  "keywords": [
+    "express",
+    "prisma",
+    "rest-api",
+    "kanban"
+  ],
   "author": "DevCraft Academy Team",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2",
     "@prisma/client": "^5.7.0",
     "cors": "^2.8.5",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2"
   },
   "devDependencies": {
-    "prisma": "^5.7.0",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "globals": "^17.6.0",
     "jest": "^29.7.0",
-    "supertest": "^6.3.3",
-    "nodemon": "^3.0.2"
+    "nodemon": "^3.0.2",
+    "prettier": "^3.8.3",
+    "prisma": "^5.7.0",
+    "supertest": "^6.3.3"
   },
   "jest": {
     "testEnvironment": "node",
-    "coveragePathIgnorePatterns": ["/node_modules/"],
-    "testMatch": ["**/__tests__/**/*.js", "**/?(*.)+(spec|test).js"]
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.js",
+      "**/?(*.)+(spec|test).js"
+    ]
   }
 }

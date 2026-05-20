@@ -5,8 +5,12 @@ const express = require('express');
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  const boards = prisma.board.findMany();
-  res.json(boards);
+  prisma.board
+    .findMany()
+    .then(data => {
+      res.json(data);
+    })
+    .catch(err => res.status(500).json({ error: err }));
 });
 
 router.get('/:id', (req, res) => {
@@ -27,11 +31,31 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-  // Response board has been created
+  const body = req.body;
+  prisma.board
+    .create({ data: { name: body.name, description: body.description, status: body.status } })
+    .then(data => {
+      console.log('data: ', data);
+      res.json(data);
+    })
+    .catch(err => {
+      console.error('err: ', err);
+      res.status(500).json({ error: err });
+    });
 });
 
 router.delete('/:id', (req, res) => {
-  // Response board has been deleted
+  const id = req.params.id;
+  console.log('id: ', id);
+  prisma.board
+    .delete({ where: { id: id } })
+    .then(data => {
+      res.status(204).json(data);
+    })
+    .catch(error => {
+      console.error(error);
+      res.status(500).json({ error: `Cannot delete board with id ${id}` });
+    });
 });
 
 module.exports = router;

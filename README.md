@@ -101,13 +101,19 @@ task-board-api/
 └── package.json        # Dependencies
 ```
 
-## API Endpoints (To Be Implemented)
+## API Endpoints
 
 ### Boards
 
-- `GET /boards` - List all boards
-- `POST /boards` - Create new board
-- `GET /boards/:id` - Get board details
+- `GET /boards`
+  - Response: array of all boards
+- `GET /boards/:id`
+  - Response: board object or `404` if not found
+- `POST /boards`
+  - Body: `{ name: string, description?: string, status?: string }`
+  - Creates a board and returns the created object
+- `DELETE /boards/:id`
+  - Deletes a board by id and returns `204` on success
 
 ### Tasks
 

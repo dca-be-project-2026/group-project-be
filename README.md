@@ -101,20 +101,94 @@ task-board-api/
 └── package.json        # Dependencies
 ```
 
-## API Endpoints (To Be Implemented)
+## API Endpoints
+
+Base URL: `http://localhost:3000`
+
+### Health Check
+
+| Method | Endpoint  | Description        |
+|--------|-----------|--------------------|
+| GET    | `/health` | Check API status   |
+
+**Response** `200 OK`
+```json
+{ "status": "ok", "message": "Task Board API is running" }
+```
+
+---
 
 ### Boards
 
-- `GET /boards` - List all boards
-- `POST /boards` - Create new board
-- `GET /boards/:id` - Get board details
+| Method | Endpoint      | Description        |
+|--------|---------------|--------------------|
+| GET    | `/boards`     | Get all boards     |
+| GET    | `/boards/:id` | Get board by ID    |
+| POST   | `/boards`     | Create a new board |
+| DELETE | `/boards/:id` | Delete a board     |
 
-### Tasks
+#### GET /boards
 
-- `GET /boards/:id/tasks` - Get all tasks for a board
-- `POST /boards/:id/tasks` - Create new task
-- `PATCH /tasks/:id` - Update task (status, title, description)
-- `DELETE /tasks/:id` - Delete task
+Returns a list of all boards.
+
+**Response** `200 OK`
+```json
+[
+  { "id": "abc123", "name": "My Board", "description": "...", "status": "..." }
+]
+```
+
+#### GET /boards/:id
+
+**Response** `200 OK`
+```json
+{ "id": "abc123", "name": "My Board", "description": "...", "status": "..." }
+```
+
+**Error** `404 Not Found`
+```json
+{ "error": "Board with id abc123 is not found" }
+```
+
+#### POST /boards
+
+**Request body** (`name` is required)
+```json
+{
+  "name": "My Board",
+  "description": "Optional description",
+  "status": "Optional status"
+}
+```
+
+**Response** `200 OK` — returns the created board object.
+
+**Error** `400 Bad Request`
+```json
+{ "error": "Name of the board must be provided!" }
+```
+
+#### DELETE /boards/:id
+
+**Response** `204 No Content`
+
+---
+
+### Example curl Commands
+
+```bash
+# Get all boards
+curl.exe http://localhost:3000/boards
+
+# Get board by ID
+curl.exe http://localhost:3000/boards/abc123
+
+# Create a board
+curl.exe -X POST http://localhost:3000/boards -H "Content-Type: application/json" -d "{\"name\": \"My Board\", \"description\": \"My description\"}"
+
+# Delete a board
+curl.exe -X DELETE http://localhost:3000/boards/abc123
+```
 
 ## Testing
 

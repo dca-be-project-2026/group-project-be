@@ -18,7 +18,7 @@ const boardsRoute = require('./routes/boards');
 const tasksRoute = require('./routes/tasks');
 
 app.use('/boards', boardsRoute);
-app.use('/tasks', tasksRoute);
+app.use('/boards', tasksRoute);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

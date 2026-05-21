@@ -5,5 +5,6 @@
     "source.fixAll.eslint": "always"
   },
   "eslint.validate": ["javascript"],
-  "prettier.singleQuote": true
+  "prettier.singleQuote": true,
+  "prisma.pinToPrisma6": true
 }

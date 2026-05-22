@@ -80,6 +80,18 @@ router.patch('/tasks/:id', async (req, res, next) => {
     const { title, description, status, priority, dueDate } = req.body;
     const id = req.params.id;
 
+    const task = await prisma.task.findUnique({ where: { id } });
+    if (!task) {
+      return res.status(404).json({ error: 'Task cannot be found' });
+    }
+
+    const VALID_STATUSES = ['todo', 'in_progress', 'done'];
+    if (status && !VALID_STATUSES.includes(status)) {
+      return res
+        .status(400)
+        .json({ error: 'Status must be one of these: "todo", "in_progress", "done"' });
+    }
+
     const task = await prisma.task.update({
       where: { id: id },
       data: {

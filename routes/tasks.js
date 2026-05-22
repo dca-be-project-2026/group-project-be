@@ -62,8 +62,39 @@ router.post('/:boardId/tasks', async (req, res, next) => {
   }
 });
 
-router.delete('/:id', (req, res) => {
-  // Response task has been deleted
+router.delete('/tasks/:id', (req, res) => {
+  const id = req.params.id;
+  prisma.task
+    .delete({ where: { id: id } })
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({ error: 'Something went wrong!' });
+    });
+});
+
+router.patch('/tasks/:id', async (req, res, next) => {
+  try {
+    const { title, description, status, priority, dueDate } = req.body;
+    const id = req.params.id;
+
+    const task = await prisma.task.update({
+      where: { id: id },
+      data: {
+        title,
+        description,
+        status,
+        priority,
+        dueDate: dueDate !== undefined ? new Date(dueDate) : undefined,
+      },
+    });
+
+    res.status(200).json({ data: task });
+  } catch (error) {
+    next(error);
+  }
 });
 
 module.exports = router;

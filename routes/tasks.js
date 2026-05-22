@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 const prisma = new PrismaClient();
 
+// TODO maybe modify the route so that we don't need to type tasks twice "see readme Update a task by ID"
 router.get('/:boardId/tasks', async (req, res, next) => {
   try {
     const tasks = await prisma.task.findMany({

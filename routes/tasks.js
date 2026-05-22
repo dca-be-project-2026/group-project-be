@@ -92,7 +92,7 @@ router.patch('/tasks/:id', async (req, res, next) => {
         .json({ error: 'Status must be one of these: "todo", "in_progress", "done"' });
     }
 
-    const task = await prisma.task.update({
+    const updatedTask = await prisma.task.update({
       where: { id: id },
       data: {
         title,
@@ -103,7 +103,7 @@ router.patch('/tasks/:id', async (req, res, next) => {
       },
     });
 
-    res.status(200).json({ data: task });
+    res.status(200).json({ data: updatedTask });
   } catch (error) {
     next(error);
   }

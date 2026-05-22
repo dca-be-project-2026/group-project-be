@@ -161,7 +161,7 @@ Returns a list of all boards.
 }
 ```
 
-**Response** `200 OK` — returns the created board object.
+**Response** `201 OK` — returns the created board object.
 
 **Error** `400 Bad Request`
 ```json

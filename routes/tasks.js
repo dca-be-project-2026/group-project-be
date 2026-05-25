@@ -80,8 +80,8 @@ router.patch('/tasks/:id', async (req, res, next) => {
     const { title, description, status, priority, dueDate } = req.body;
     const id = req.params.id;
 
-    const task = await prisma.task.findUnique({ where: { id } });
-    if (!task) {
+    const findTask = await prisma.task.findUnique({ where: { id } });
+    if (!findTask) {
       return res.status(404).json({ error: 'Task cannot be found' });
     }
 
@@ -92,7 +92,7 @@ router.patch('/tasks/:id', async (req, res, next) => {
         .json({ error: 'Status must be one of these: "todo", "in_progress", "done"' });
     }
 
-    const task = await prisma.task.update({
+    const updatedTask = await prisma.task.update({
       where: { id: id },
       data: {
         title,
@@ -103,7 +103,7 @@ router.patch('/tasks/:id', async (req, res, next) => {
       },
     });
 
-    res.status(200).json({ data: task });
+    res.status(200).json({ data: updatedTask });
   } catch (error) {
     next(error);
   }

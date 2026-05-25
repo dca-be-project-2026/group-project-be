@@ -107,11 +107,12 @@ Base URL: `http://localhost:3000`
 
 ### Health Check
 
-| Method | Endpoint  | Description        |
-|--------|-----------|--------------------|
-| GET    | `/health` | Check API status   |
+| Method | Endpoint  | Description      |
+| ------ | --------- | ---------------- |
+| GET    | `/health` | Check API status |
 
 **Response** `200 OK`
+
 ```json
 { "status": "ok", "message": "Task Board API is running" }
 ```
@@ -121,7 +122,7 @@ Base URL: `http://localhost:3000`
 ### Boards
 
 | Method | Endpoint      | Description        |
-|--------|---------------|--------------------|
+| ------ | ------------- | ------------------ |
 | GET    | `/boards`     | Get all boards     |
 | GET    | `/boards/:id` | Get board by ID    |
 | POST   | `/boards`     | Create a new board |
@@ -132,20 +133,21 @@ Base URL: `http://localhost:3000`
 Returns a list of all boards.
 
 **Response** `200 OK`
+
 ```json
-[
-  { "id": "abc123", "name": "My Board", "description": "...", "status": "..." }
-]
+[{ "id": "abc123", "name": "My Board", "description": "...", "status": "..." }]
 ```
 
 #### GET /boards/:id
 
 **Response** `200 OK`
+
 ```json
 { "id": "abc123", "name": "My Board", "description": "...", "status": "..." }
 ```
 
 **Error** `404 Not Found`
+
 ```json
 { "error": "Board with id abc123 is not found" }
 ```
@@ -153,6 +155,7 @@ Returns a list of all boards.
 #### POST /boards
 
 **Request body** (`name` is required)
+
 ```json
 {
   "name": "My Board",
@@ -164,6 +167,7 @@ Returns a list of all boards.
 **Response** `201 OK` — returns the created board object.
 
 **Error** `400 Bad Request`
+
 ```json
 { "error": "Name of the board must be provided!" }
 ```
@@ -171,6 +175,104 @@ Returns a list of all boards.
 #### DELETE /boards/:id
 
 **Response** `204 No Content`
+
+---
+
+### Tasks
+
+| Method | Endpoint              | Description              |
+| ------ | --------------------- | ------------------------ |
+| GET    | `/:boardId/tasks`     | Get all tasks of a board |
+| GET    | `/:boardId/tasks/:id` | Get a task of a board    |
+| POST   | `/:boardId/tasks`     | Create a new task        |
+| DELETE | `/tasks/:id`          | Delete a task            |
+
+#### GET /:boardId/tasks
+
+Returns a list of all tasks of the board with id = boardId.
+
+**Response** `200 OK`
+
+```json
+{
+  "data": [
+    {
+      "id": "611da98f-1542-40ea-8534-f29ba48713ea",
+      "title": "My updated Task",
+      "description": "My updated description",
+      "status": "todo",
+      "priority": "medium",
+      "dueDate": null,
+      "boardId": "974c0eda-a924-4716-9d7e-1fdd334c70c2",
+      "createdAt": "2026-05-22T21:41:15.226Z",
+      "updatedAt": "2026-05-22T21:47:50.730Z"
+    }
+  ]
+}
+```
+
+#### GET /:boardId/tasks/:id
+
+**Response** `200 OK`
+
+```json
+{
+  "data": {
+    "id": "611da98f-1542-40ea-8534-f29ba48713ea",
+    "title": "My updated Task",
+    "description": "My updated description",
+    "status": "todo",
+    "priority": "medium",
+    "dueDate": null,
+    "boardId": "974c0eda-a924-4716-9d7e-1fdd334c70c2",
+    "createdAt": "2026-05-22T21:41:15.226Z",
+    "updatedAt": "2026-05-22T21:47:50.730Z"
+  }
+}
+```
+
+**Error** `404 Not Found`
+
+```json
+{ "error": "Task not found" }
+```
+
+#### POST /:boardId/tasks
+
+**Request body** (`title` is required)
+
+```json
+{
+  "title": "My Task",
+  "description": "My descrption"
+}
+```
+
+**Response** `201 OK` — returns the created task object.
+
+**Error** `400 Bad Request` if title is not provided or status is invalid
+
+```json
+{ "error": "Title must be provided" }
+{ "error": "Status must be one of these: todo, in_progress, done" }
+```
+
+#### DELETE /boards/:id
+
+**Response** `204 No Content`
+
+#### PATCH /tasks/:id
+
+**Request body** can be any property of the task
+
+```json
+{
+  "title": "My new Task",
+  "description": "My new descrption"
+}
+```
+
+**Response** `200 OK` — returns the updated task object.
 
 ---
 
@@ -188,6 +290,23 @@ curl.exe -X POST http://localhost:3000/boards -H "Content-Type: application/json
 
 # Delete a board
 curl.exe -X DELETE http://localhost:3000/boards/abc123
+
+# Get all tasks by board-ID
+curl.exe http://localhost:3000/tasks/boardId123/tasks
+
+# Get a task by id (board-ID is needed)
+curl.exe http://localhost:3000/tasks/boardId123/tasks/abc123
+
+# Create a task for board with board-ID
+curl.exe -X POST http://localhost:3000/tasks/123abc/tasks -H "Content-Type: application/json" -d "{\"title\": \"My Task\", \"description\": \"My descrption\"}"
+
+# Delete task by ID
+curl.exe -X DELETE http://localhost:3000/tasks/tasks/abc123
+
+# Update a task by ID
+curl.exe -X PATCH http://localhost:3000/tasks/tasks/abc123 -H "Content-Type: application/json" -d "{\"title\": \"My updated Task\", \"description\": \"
+My updated description\"}"
+
 ```
 
 ## Testing

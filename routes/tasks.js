@@ -13,7 +13,7 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-router.get('/:boardId/tasks', async (req, res, next) => {
+router.get('/:boardId', async (req, res, next) => {
   try {
     const tasks = await prisma.task.findMany({
       where: { boardId: req.params.boardId },
@@ -24,7 +24,7 @@ router.get('/:boardId/tasks', async (req, res, next) => {
   }
 });
 
-router.get('/:boardId/tasks/:id', async (req, res, next) => {
+router.get('/:id', async (req, res, next) => {
   try {
     const task = await prisma.task.findUnique({
       where: { id: req.params.id },
@@ -36,7 +36,7 @@ router.get('/:boardId/tasks/:id', async (req, res, next) => {
   }
 });
 
-router.post('/:boardId/tasks', async (req, res, next) => {
+router.post('/:boardId', async (req, res, next) => {
   try {
     const { title, description, status, priority, dueDate } = req.body;
 

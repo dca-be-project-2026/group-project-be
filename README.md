@@ -292,13 +292,13 @@ curl.exe -X POST http://localhost:3000/boards -H "Content-Type: application/json
 curl.exe -X DELETE http://localhost:3000/boards/abc123
 
 # Get all tasks by board-ID
-curl.exe http://localhost:3000/tasks/boardId123/tasks
+curl.exe http://localhost:3000/tasks/boardId123
 
-# Get a task by id (board-ID is needed)
-curl.exe http://localhost:3000/tasks/boardId123/tasks/abc123
+# Get a task by id
+curl.exe http://localhost:3000/tasks/abc123
 
 # Create a task for board with board-ID
-curl.exe -X POST http://localhost:3000/tasks/123abc/tasks -H "Content-Type: application/json" -d "{\"title\": \"My Task\", \"description\": \"My descrption\"}"
+curl.exe -X POST http://localhost:3000/tasks/123abc -H "Content-Type: application/json" -d "{\"title\": \"My Task\", \"description\": \"My descrption\"}"
 
 # Delete task by ID
 curl.exe -X DELETE http://localhost:3000/tasks/tasks/abc123

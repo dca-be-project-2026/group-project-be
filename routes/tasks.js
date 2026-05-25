@@ -4,7 +4,15 @@ const express = require('express');
 const router = express.Router();
 const prisma = new PrismaClient();
 
-// TODO maybe modify the route so that we don't need to type tasks twice "see readme Update a task by ID"
+router.get('/', async (req, res, next) => {
+  try {
+    const tasks = await prisma.task.findMany();
+    res.status(200).json({ data: tasks });
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.get('/:boardId/tasks', async (req, res, next) => {
   try {
     const tasks = await prisma.task.findMany({
@@ -63,7 +71,7 @@ router.post('/:boardId/tasks', async (req, res, next) => {
   }
 });
 
-router.delete('/tasks/:id', (req, res) => {
+router.delete('/:id', (req, res) => {
   const id = req.params.id;
   prisma.task
     .delete({ where: { id: id } })
@@ -76,13 +84,13 @@ router.delete('/tasks/:id', (req, res) => {
     });
 });
 
-router.patch('/tasks/:id', async (req, res, next) => {
+router.patch('/:id', async (req, res, next) => {
   try {
     const { title, description, status, priority, dueDate } = req.body;
     const id = req.params.id;
 
     const findTask = await prisma.task.findUnique({ where: { id } });
-    if (!findTask) {
+    if (!task) {
       return res.status(404).json({ error: 'Task cannot be found' });
     }
 
@@ -93,7 +101,7 @@ router.patch('/tasks/:id', async (req, res, next) => {
         .json({ error: 'Status must be one of these: "todo", "in_progress", "done"' });
     }
 
-    const updatedTask = await prisma.task.update({
+    const updateTask = await prisma.task.update({
       where: { id: id },
       data: {
         title,
@@ -104,7 +112,7 @@ router.patch('/tasks/:id', async (req, res, next) => {
       },
     });
 
-    res.status(200).json({ data: updatedTask });
+    res.status(200).json({ data: task });
   } catch (error) {
     next(error);
   }

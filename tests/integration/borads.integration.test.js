@@ -1,9 +1,8 @@
 const request = require('supertest');
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
-
 const boardsRouter = require('../../routes/boards');
-
+const { createBoard, defaultBoard } = require('../factories/board.factory');
 const prisma = new PrismaClient();
 
 describe('Boards API Integration Tests', () => {
@@ -26,12 +25,12 @@ describe('Boards API Integration Tests', () => {
 
   test('POST /boards creates a board in the real database', async () => {
     const res = await request(app).post('/boards').send({
-      name: 'Test Board',
-      description: 'Created during integration test',
+      name: defaultBoard.name,
+      description: defaultBoard.description,
+      status: defaultBoard.status,
     });
 
     expect(res.statusCode).toBe(200);
-
     expect(res.body.name).toBe('Test Board');
     expect(res.body.status).toBe('active');
 
@@ -43,17 +42,11 @@ describe('Boards API Integration Tests', () => {
     });
 
     expect(boardInDb).not.toBeNull();
-    expect(boardInDb.name).toBe('Test Board');
+    expect(boardInDb.name).toBe(defaultBoard.name);
   });
 
   test('GET /boards returns created boards', async () => {
-    // create board 1
-    await prisma.board.create({
-      data: {
-        name: 'Board 1',
-        description: 'Test board 1',
-      },
-    });
+    await createBoard({ name: 'Board 1', description: 'Test Board 1', status: 'active' });
 
     const res = await request(app).get('/boards');
 
@@ -73,11 +66,7 @@ describe('Boards API Integration Tests', () => {
   });
 
   test('DELETE /boards/:id deletes board from database', async () => {
-    const board = await prisma.board.create({
-      data: {
-        name: 'Delete Me',
-      },
-    });
+    const board = await createBoard({ name: 'Delete Me' });
 
     const res = await request(app).delete(`/boards/${board.id}`);
 

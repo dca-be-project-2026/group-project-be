@@ -1,5 +1,6 @@
 const request = require('supertest');
 const express = require('express');
+const { defaultBoard } = require('../fixtures/board.fixture');
 
 const mockFindMany = jest.fn();
 const mockFindUnique = jest.fn();
@@ -34,8 +35,8 @@ describe('Boards API Unit Tests', () => {
 
   test('GET /boards returns boards', async () => {
     mockFindMany.mockResolvedValue([
-      { id: '1', name: 'Board 1', description: 'test board 1', status: 'active' },
-      { id: '2', name: 'Board 2', description: 'test board 2', status: 'active' },
+      { id: '1', ...defaultBoard },
+      { id: '2', name: 'Board 2', ...defaultBoard },
     ]);
 
     const res = await request(app).get('/boards');
@@ -44,10 +45,8 @@ describe('Boards API Unit Tests', () => {
 
     expect(res.body.length).toEqual(2);
     expect(res.body[0]).toEqual({
-      description: 'test board 1',
       id: '1',
-      name: 'Board 1',
-      status: 'active',
+      ...defaultBoard,
     });
   });
 
@@ -66,17 +65,13 @@ describe('Boards API Unit Tests', () => {
   test('GET /boards/:id returns board with specified id', async () => {
     mockFindUnique.mockResolvedValue({
       id: '1',
-      name: 'Board 1',
-      description: 'test board',
-      status: 'active',
+      ...defaultBoard,
     });
     const res = await request(app).get('/boards/1');
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual({
       id: '1',
-      name: 'Board 1',
-      description: 'test board',
-      status: 'active',
+      ...defaultBoard,
     });
   });
 
@@ -90,20 +85,16 @@ describe('Boards API Unit Tests', () => {
   test('POST /boards creates a new board', async () => {
     mockCreate.mockResolvedValue({
       id: '1',
-      name: 'Board 1',
-      description: 'test board',
-      status: 'active',
+      ...defaultBoard,
     });
     const res = await request(app).post('/boards').send({
-      name: 'Board 1',
-      description: 'test board',
+      name: defaultBoard.name,
+      description: defaultBoard.description,
     });
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual({
       id: '1',
-      name: 'Board 1',
-      description: 'test board',
-      status: 'active',
+      ...defaultBoard,
     });
   });
 

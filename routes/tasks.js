@@ -116,6 +116,33 @@ router.patch('/batch', async (req, res, next) => {
   }
 });
 
+router.patch('/:id/status', async (req, res, next) => {
+  try {
+    const { status } = req.body;
+    const id = req.params.id;
+
+    const findTask = await prisma.task.findUnique({ where: { id } });
+    if (!findTask) {
+      return res.status(404).json({ error: 'Task cannot be found' });
+    }
+
+    if (isInvalidStatus(status)) {
+      return res.status(400).json({
+        error: statusErrorMessage,
+      });
+    }
+    const updateTask = await prisma.task.update({
+      where: { id },
+      data: { status },
+    });
+    res.status(200).json({
+      data: updateTask,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.patch('/:id', async (req, res, next) => {
   try {
     const { title, description, status, priority, dueDate } = req.body;

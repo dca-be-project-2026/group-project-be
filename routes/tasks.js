@@ -81,17 +81,16 @@ router.post('/:boardId/tasks', async (req, res, next) => {
   }
 });
 
-router.delete('/:id', (req, res) => {
-  const id = req.params.id;
-  prisma.task
-    .delete({ where: { id: id } })
-    .then(() => {
-      res.status(204).send();
-    })
-    .catch(err => {
-      console.error(err);
-      res.status(500).json({ error: 'Something went wrong!' });
+router.delete('/:id', async (req, res, next) => {
+  try {
+    await prisma.task.delete({
+      where: { id: req.params.id },
     });
+
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.patch('/batch', async (req, res, next) => {
@@ -123,7 +122,7 @@ router.patch('/:id', async (req, res, next) => {
     const id = req.params.id;
 
     const findTask = await prisma.task.findUnique({ where: { id } });
-    if (!task) {
+    if (!findTask) {
       return res.status(404).json({ error: 'Task cannot be found' });
     }
 
@@ -142,7 +141,7 @@ router.patch('/:id', async (req, res, next) => {
       },
     });
 
-    res.status(200).json({ data: task });
+    res.status(200).json({ data: updateTask });
   } catch (error) {
     next(error);
   }

@@ -1,11 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
+const { defaultBoard } = require('../fixtures/board.fixture');
 const prisma = new PrismaClient();
 
-const defaultBoard = {
-  name: 'Test Board',
-  description: 'Test description',
-  status: 'active',
-};
 
 async function createBoard(overrides = {}) {
   return await prisma.board.create({
@@ -13,4 +9,4 @@ async function createBoard(overrides = {}) {
   });
 }
 
-module.exports = { createBoard, defaultBoard };
+module.exports = { createBoard };

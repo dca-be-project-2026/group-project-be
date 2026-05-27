@@ -30,6 +30,12 @@ describe('Boards API Unit Tests', () => {
     app.use(express.json());
     app.use('/boards', boardsRouter);
 
+    app.use((err, req, res, next) => {
+      const statusCode = err.statusCode || 500;
+      const message = err.message || 'Something went wrong!';
+      res.status(statusCode).json({ error: message });
+    });
+
     jest.clearAllMocks();
   });
 

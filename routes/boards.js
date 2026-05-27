@@ -4,9 +4,11 @@ const prisma = new PrismaClient();
 const express = require('express');
 const router = express.Router();
 
+const { NotFoundError, ValidationError, ServerError } = require('../utils/error');
+
 const SERVER_ERROR = 'An error happened while processing your request';
 
-router.get('/', (req, res) => {
+router.get('/', (req, res, next) => {
   prisma.board
     .findMany()
     .then(data => {
@@ -14,11 +16,11 @@ router.get('/', (req, res) => {
     })
     .catch(err => {
       console.error(err);
-      res.status(500).json({ error: SERVER_ERROR });
+      next(new ServerError(SERVER_ERROR));
     });
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', (req, res, next) => {
   const id = req.params.id;
   prisma.board
     .findUnique({
@@ -33,11 +35,11 @@ router.get('/:id', (req, res) => {
     })
     .catch(err => {
       console.error(err);
-      res.status(500).json({ error: SERVER_ERROR });
+      next(new ServerError(SERVER_ERROR));
     });
 });
 
-router.post('/', (req, res) => {
+router.post('/', (req, res, next) => {
   const body = req.body;
   if (!body.name || body.name.trim() === '') {
     res.status(400).json({ error: 'Name of the board must be provided!' });
@@ -50,11 +52,11 @@ router.post('/', (req, res) => {
     })
     .catch(err => {
       console.error(err);
-      res.status(500).json({ error: SERVER_ERROR });
+      next(new ServerError(SERVER_ERROR));
     });
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', (req, res, next) => {
   const id = req.params.id;
   prisma.board
     .delete({ where: { id: id } })
@@ -63,7 +65,7 @@ router.delete('/:id', (req, res) => {
     })
     .catch(err => {
       console.error(err);
-      res.status(500).json({ error: SERVER_ERROR });
+      next(new ServerError(SERVER_ERROR));
     });
 });
 

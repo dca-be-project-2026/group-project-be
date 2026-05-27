@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 const prisma = new PrismaClient();
 const { VALID_TASK_STATUSES } = require('../constants/taskStatus');
+const { NotFoundError, ValidationError } = require('../utils/error');
 
 const isInvalidStatus = status => status && !VALID_TASK_STATUSES.includes(status);
 const statusErrorMessage = `Status must be one of these: ${VALID_TASK_STATUSES.map(s => `"${s}"`).join(', ')}`;
@@ -22,7 +23,7 @@ router.get('/:boardId/tasks', async (req, res, next) => {
     const { status } = req.query;
 
     if (isInvalidStatus(status)) {
-      return res.status(400).json({ error: statusErrorMessage });
+      throw new ValidationError(statusErrorMessage);
     }
 
     const where = { boardId: req.params.boardId };
@@ -42,7 +43,10 @@ router.get('/:boardId/tasks/:id', async (req, res, next) => {
     const task = await prisma.task.findUnique({
       where: { id: req.params.id },
     });
-    if (!task) return res.status(404).json({ error: 'Task not found' });
+    if (!task) {
+      throw new NotFoundError('Task not found');
+    }
+
     res.status(200).json({ data: task });
   } catch (error) {
     next(error);
@@ -57,13 +61,15 @@ router.post('/:boardId/tasks', async (req, res, next) => {
       where: { id: req.params.boardId },
     });
 
-    if (!board) return res.status(404).json({ error: 'Board not found' });
+    if (!board) {
+      throw new NotFoundError('Board not found');
+    }
 
     if (!title || title.trim() === '') {
-      return res.status(400).json({ error: 'Title must be provided' });
+      throw new ValidationError('Title must be provided');
     }
     if (isInvalidStatus(status)) {
-      return res.status(400).json({ error: statusErrorMessage });
+      throw new ValidationError(statusErrorMessage);
     }
     const task = await prisma.task.create({
       data: {
@@ -98,11 +104,11 @@ router.patch('/batch', async (req, res, next) => {
     const { ids, status } = req.body;
 
     if (!Array.isArray(ids) || ids.length === 0) {
-      return res.status(400).json({ error: 'ids must be a non-empty array' });
+      throw new ValidationError('ids must be a non-empty array');
     }
 
     if (isInvalidStatus(status)) {
-      return res.status(400).json({ error: statusErrorMessage });
+      throw new ValidationError(statusErrorMessage);
     }
 
     const { count } = await prisma.task.updateMany({
@@ -121,16 +127,15 @@ router.patch('/:id/status', async (req, res, next) => {
     const { status } = req.body;
     const id = req.params.id;
 
-    const findTask = await prisma.task.findUnique({ where: { id } });
-    if (!findTask) {
-      return res.status(404).json({ error: 'Task cannot be found' });
+    if (isInvalidStatus(status)) {
+      throw new ValidationError(statusErrorMessage);
     }
 
-    if (isInvalidStatus(status)) {
-      return res.status(400).json({
-        error: statusErrorMessage,
-      });
+    const findTask = await prisma.task.findUnique({ where: { id } });
+    if (!findTask) {
+      throw new NotFoundError('Task not found');
     }
+
     const updateTask = await prisma.task.update({
       where: { id },
       data: { status },
@@ -148,13 +153,13 @@ router.patch('/:id', async (req, res, next) => {
     const { title, description, status, priority, dueDate } = req.body;
     const id = req.params.id;
 
-    const findTask = await prisma.task.findUnique({ where: { id } });
-    if (!findTask) {
-      return res.status(404).json({ error: 'Task cannot be found' });
+    if (isInvalidStatus(status)) {
+      throw new ValidationError(statusErrorMessage);
     }
 
-    if (isInvalidStatus(status)) {
-      return res.status(400).json({ error: statusErrorMessage });
+    const findTask = await prisma.task.findUnique({ where: { id } });
+    if (!findTask) {
+      throw new NotFoundError('Task not found');
     }
 
     const updateTask = await prisma.task.update({

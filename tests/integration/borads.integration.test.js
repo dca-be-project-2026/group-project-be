@@ -2,7 +2,8 @@ const request = require('supertest');
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const boardsRouter = require('../../routes/boards');
-const { createBoard, defaultBoard } = require('../factories/board.factory');
+const { createBoard } = require('../factories/board.factory');
+const { defaultBoard } = require('../fixtures/board.fixture');
 const prisma = new PrismaClient();
 
 describe('Boards API Integration Tests', () => {

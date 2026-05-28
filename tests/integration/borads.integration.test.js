@@ -1,10 +1,9 @@
 const request = require('supertest');
 const express = require('express');
-const { PrismaClient } = require('@prisma/client');
 const boardsRouter = require('../../routes/boards');
 const { createBoard } = require('../factories/board.factory');
 const { defaultBoard } = require('../fixtures/board.fixture');
-const prisma = new PrismaClient();
+const prisma = require('../../prisma/prisma');
 
 describe('Boards API Integration Tests', () => {
   let app;
@@ -17,6 +16,10 @@ describe('Boards API Integration Tests', () => {
 
   beforeEach(async () => {
     // clean database before every test
+    await prisma.board.deleteMany();
+  });
+
+  afterEach(async () => {
     await prisma.board.deleteMany();
   });
 

@@ -1,0 +1,11 @@
+meta {
+  name: Get Tasks by Board
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/tasks/{{boardId}}/tasks
+  body: none
+  auth: none
+}

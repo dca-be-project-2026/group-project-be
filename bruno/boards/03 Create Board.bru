@@ -1,0 +1,19 @@
+meta {
+  name: Create Board
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/boards
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "My Test Board",
+    "description": "A board created via Bruno",
+    "status": "active"
+  }
+}

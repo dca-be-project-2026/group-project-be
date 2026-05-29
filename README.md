@@ -304,7 +304,7 @@ curl.exe -X POST http://localhost:3000/tasks/123abc/tasks -H "Content-Type: appl
 curl.exe -X DELETE http://localhost:3000/tasks/tasks/abc123
 
 # Update a task by ID
-curl.exe -X PATCH http://localhost:3000/tasks/tasks/abc123 -H "Content-Type: application/json" -d "{\"title\": \"My updated Task\", \"description\": \"
+curl.exe -X PATCH http://localhost:3000/tasks/abc123 -H "Content-Type: application/json" -d "{\"title\": \"My updated Task\", \"description\": \"
 My updated description\"}"
 
 ```

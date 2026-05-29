@@ -1,8 +1,7 @@
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../prisma/prisma');
 
 const express = require('express');
 const router = express.Router();
-const prisma = new PrismaClient();
 const { VALID_TASK_STATUSES } = require('../constants/taskStatus');
 const { NotFoundError, ValidationError } = require('../utils/error');
 
@@ -135,7 +134,6 @@ router.patch('/:id/status', async (req, res, next) => {
     if (!findTask) {
       throw new NotFoundError('Task not found');
     }
-
     const updateTask = await prisma.task.update({
       where: { id },
       data: { status },

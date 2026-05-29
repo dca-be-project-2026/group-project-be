@@ -1,0 +1,11 @@
+meta {
+  name: Get Single Task
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/tasks/{{boardId}}/tasks/{{taskId}}
+  body: none
+  auth: none
+}

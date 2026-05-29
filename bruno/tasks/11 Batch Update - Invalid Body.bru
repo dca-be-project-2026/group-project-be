@@ -1,0 +1,18 @@
+meta {
+  name: Batch Update - Invalid Body
+  type: http
+  seq: 11
+}
+
+patch {
+  url: {{baseUrl}}/tasks/batch
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "ids": [],
+    "status": "invalid_status"
+  }
+}

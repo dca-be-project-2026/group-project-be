@@ -21,16 +21,12 @@ app.use('/boards', boardsRoute);
 app.use('/tasks', tasksRoute);
 
 // Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  const statusCode = err.statusCode || 500;
-  const message = err.message || 'Something went wrong!';
-  res.status(statusCode).json({ error: message });
-});
+const errorHandler = require('./middleware/errorHandler');
+app.use(errorHandler);
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).json({ error: 'Route not found' });
+  res.status(404).json({ status: 'fail', message: 'Route not found' });
 });
 
 // Only start server if not in test environment

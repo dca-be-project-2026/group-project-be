@@ -1,0 +1,21 @@
+meta {
+  name: Patch status in URL
+  type: http
+  seq: 9
+}
+
+patch {
+  url: {{baseUrl}}/tasks/{{taskId}}/tasks?status=todo
+  body: json
+  auth: none
+}
+
+params:query {
+  status: todo
+}
+
+body:json {
+  {
+    "status": "done"
+  }
+}

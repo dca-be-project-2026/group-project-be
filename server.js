@@ -1,6 +1,9 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const prisma = require('./prisma/prisma');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,15 +20,35 @@ const corsOptions = {
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true
+  credentials: true,
 };
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 50,
+  message: 'Too many requests',
+});
 
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(helmet());
+app.use(limiter);
 
 // Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', message: 'Task Board API is running' });
+app.get('/health', async (req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      database: 'connected',
+    });
+  } catch (err) {
+    res.status(503).json({
+      status: 'error',
+      database: 'disconnected',
+    });
+  }
 });
 
 const boardsRoute = require('./routes/boards');

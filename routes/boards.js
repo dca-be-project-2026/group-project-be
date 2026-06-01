@@ -2,69 +2,35 @@ const prisma = require('../prisma/prisma');
 const express = require('express');
 const router = express.Router();
 
-const { NotFoundError, ValidationError, ServerError } = require('../utils/error');
+const { NotFoundError } = require('../utils/error');
+const asyncHandler = require('../middleware/asyncHandler');
+const validate = require('../middleware/validate');
+const { createBoardSchema } = require('../schemas/boardSchemas');
 
-const SERVER_ERROR = 'An error happened while processing your request';
+router.get('/', asyncHandler(async (req, res) => {
+  const data = await prisma.board.findMany();
+  res.json(data);
+}));
 
-router.get('/', (req, res, next) => {
-  prisma.board
-    .findMany()
-    .then(data => {
-      res.json(data);
-    })
-    .catch(err => {
-      console.error(err);
-      next(new ServerError(SERVER_ERROR));
-    });
-});
-
-router.get('/:id', (req, res, next) => {
+router.get('/:id', asyncHandler(async (req, res) => {
   const id = req.params.id;
-  prisma.board
-    .findUnique({
-      where: { id: id },
-    })
-    .then(data => {
-      if (!data) {
-        res.status(404).json({ error: `Board with id ${id} is not found` });
-        return;
-      }
-      res.json(data);
-    })
-    .catch(err => {
-      console.error(err);
-      next(new ServerError(SERVER_ERROR));
-    });
-});
-
-router.post('/', (req, res, next) => {
-  const body = req.body;
-  if (!body.name || body.name.trim() === '') {
-    res.status(400).json({ error: 'Name of the board must be provided!' });
-    return;
+  const data = await prisma.board.findUnique({ where: { id } });
+  if (!data) {
+    throw new NotFoundError(`Board with id ${id} is not found`);
   }
-  prisma.board
-    .create({ data: { name: body.name, description: body.description, status: body.status } })
-    .then(data => {
-      res.json(data);
-    })
-    .catch(err => {
-      console.error(err);
-      next(new ServerError(SERVER_ERROR));
-    });
-});
+  res.json(data);
+}));
 
-router.delete('/:id', (req, res, next) => {
+router.post('/', validate(createBoardSchema), asyncHandler(async (req, res) => {
+  const { name, description, status } = req.body;
+  const data = await prisma.board.create({ data: { name, description, status } });
+  res.status(201).json(data);
+}));
+
+router.delete('/:id', asyncHandler(async (req, res) => {
   const id = req.params.id;
-  prisma.board
-    .delete({ where: { id: id } })
-    .then(data => {
-      res.status(204).json(data);
-    })
-    .catch(err => {
-      console.error(err);
-      next(new ServerError(SERVER_ERROR));
-    });
-});
+  await prisma.board.delete({ where: { id } });
+  res.status(204).send();
+}));
 
 module.exports = router;

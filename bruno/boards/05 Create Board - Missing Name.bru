@@ -1,0 +1,17 @@
+meta {
+  name: Create Board - Missing Name
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/boards
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "description": "Board without a name"
+  }
+}

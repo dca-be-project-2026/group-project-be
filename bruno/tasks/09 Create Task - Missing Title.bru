@@ -1,0 +1,18 @@
+meta {
+  name: Create Task - Missing Title
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{baseUrl}}/tasks/{{boardId}}/tasks
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "description": "Task without a title",
+    "status": "todo"
+  }
+}

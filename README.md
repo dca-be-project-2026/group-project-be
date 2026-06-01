@@ -14,7 +14,7 @@ Backend API for a Kanban board (like Trello/Linear). Built by your team as a 3-w
 ## Tech Stack
 
 - **Runtime:** Node.js + Express
-- **Database:** SQLite + Prisma ORM
+- **Database:** Postgres + Prisma ORM
 - **Testing:** Jest + Supertest
 - **Deployment:** Render or Railway
 
@@ -98,6 +98,9 @@ task-board-api/
 │   ├── setup.js        # Test configuration
 │   └── *.test.js       # Test files
 ├── .env                # Environment variables (not committed)
+├── .env.development    # Environment variables for development stage (not committed)
+├── .env.production     # Environment variables production stage (not committed)
+├── docker-compose.yaml # Easily start the DB locally using docker
 └── package.json        # Dependencies
 ```
 
@@ -369,7 +372,7 @@ Tests are located in `tests/` and use Jest + Supertest.
 
 1. Create new project
 2. Connect GitHub repository
-3. Add SQLite database
+3. Add Postgres database
 4. Deploy!
 
 ## Team Roles

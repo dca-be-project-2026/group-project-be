@@ -1,4 +1,8 @@
-require('dotenv').config();
+const env = process.env.NODE_ENV || 'development';
+require('dotenv').config({
+  path: `.env.${env}`,
+});
+
 const express = require('express');
 const cors = require('cors');
 
@@ -17,7 +21,7 @@ const corsOptions = {
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true
+  credentials: true,
 };
 
 app.use(cors(corsOptions));

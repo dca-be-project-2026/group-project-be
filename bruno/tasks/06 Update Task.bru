@@ -1,0 +1,17 @@
+meta {
+  name: Update Task
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{baseUrl}}/tasks/{{taskId}}/status
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "status": "done"
+  }
+}

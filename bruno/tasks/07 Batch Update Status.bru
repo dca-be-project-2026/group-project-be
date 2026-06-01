@@ -1,0 +1,18 @@
+meta {
+  name: Batch Update Status
+  type: http
+  seq: 7
+}
+
+patch {
+  url: {{baseUrl}}/tasks/batch
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "ids": ["REPLACE_WITH_TASK_ID_1", "REPLACE_WITH_TASK_ID_2"],
+    "status": "done"
+  }
+}

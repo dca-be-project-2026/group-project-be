@@ -55,6 +55,11 @@ app.get('/health', async (req, res) => {
   }
 });
 
+// Test endpoint
+app.get('/ping', (req, res) => {
+  res.json({ message: 'pong 🏓', deployedAt: new Date().toISOString() });
+});
+
 const boardsRoute = require('./routes/boards');
 const tasksRoute = require('./routes/tasks');
 

@@ -1,0 +1,18 @@
+meta {
+  name: Create Task - Invalid Status
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{baseUrl}}/tasks/{{boardId}}/tasks
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "title": "My Task",
+    "status": "invalid_status"
+  }
+}

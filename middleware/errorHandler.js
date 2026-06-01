@@ -10,9 +10,11 @@ function errorHandler(err, req, res, next) {
     return res.status(422).json({
       status: 'fail',
       message: 'Validation failed',
-      errors: err.errors.map(e => ({ field: e.path.join('.'), message: e.message })),
+      errors: err.issues.map(e => ({ field: e.path.join('.'), message: e.message })),
     });
   }
 
   res.status(statusCode).json({ status: statusCode >= 500 ? 'error' : 'fail', message });
 }
+
+module.exports = errorHandler;

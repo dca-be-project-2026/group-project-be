@@ -397,4 +397,4 @@ MIT - DevCraft Academy Team Project
 
 - Thomas: Deployment Lead
 - Yazan: Testing and Quality Lead
-- Viktor: Documentation Lead
+- Viktor: Documentation Leada

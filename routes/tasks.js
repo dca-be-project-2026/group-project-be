@@ -5,116 +5,162 @@ const router = express.Router();
 const { NotFoundError } = require('../utils/error');
 const asyncHandler = require('../middleware/asyncHandler');
 const validate = require('../middleware/validate');
-const { createTaskSchema, updateTaskSchema, updateTaskStatusSchema, batchUpdateTaskSchema } = require('../schemas/taskSchemas');
+const {
+  createTaskSchema,
+  updateTaskSchema,
+  updateTaskStatusSchema,
+  batchUpdateTaskSchema,
+} = require('../schemas/taskSchemas');
 
-router.get('/', asyncHandler(async (req, res) => {
-  const tasks = await prisma.task.findMany();
-  res.status(200).json({ data: tasks });
-}));
+router.get(
+  '/',
+  asyncHandler(async (req, res) => {
+    const tasks = await prisma.task.findMany();
+    res.status(200).json({ data: tasks });
+  })
+);
 
-router.get('/:boardId/tasks', asyncHandler(async (req, res) => {
-  const { status } = req.query;
+router.get(
+  '/:id',
+  asyncHandler(async (req, res) => {
+    const task = await prisma.task.findUnique({
+      where: { id: req.params.id },
+    });
+    if (!task) {
+      throw new NotFoundError('Task not found');
+    }
+    res.status(200).json({ data: task });
+  })
+);
 
-  const where = { boardId: req.params.boardId };
-  if (status) {
-    where.status = status;
-  }
+router.get(
+  '/:boardId/tasks',
+  asyncHandler(async (req, res) => {
+    const { status } = req.query;
 
-  const tasks = await prisma.task.findMany({ where });
-  res.status(200).json({ data: tasks });
-}));
+    const where = { boardId: req.params.boardId };
+    if (status) {
+      where.status = status;
+    }
 
-router.get('/:boardId/tasks/:id', asyncHandler(async (req, res) => {
-  const task = await prisma.task.findUnique({
-    where: { id: req.params.id },
-  });
-  if (!task) {
-    throw new NotFoundError('Task not found');
-  }
+    const tasks = await prisma.task.findMany({ where });
+    res.status(200).json({ data: tasks });
+  })
+);
 
-  res.status(200).json({ data: task });
-}));
+router.get(
+  '/:boardId/tasks/:id',
+  asyncHandler(async (req, res) => {
+    const task = await prisma.task.findUnique({
+      where: { id: req.params.id },
+    });
+    if (!task) {
+      throw new NotFoundError('Task not found');
+    }
 
-router.post('/:boardId/tasks', validate(createTaskSchema), asyncHandler(async (req, res) => {
-  const { title, description, status, priority, dueDate } = req.body;
+    res.status(200).json({ data: task });
+  })
+);
 
-  const board = await prisma.board.findUnique({
-    where: { id: req.params.boardId },
-  });
+router.post(
+  '/:boardId/tasks',
+  validate(createTaskSchema),
+  asyncHandler(async (req, res) => {
+    const { title, description, status, priority, dueDate } = req.body;
 
-  if (!board) {
-    throw new NotFoundError('Board not found');
-  }
+    const board = await prisma.board.findUnique({
+      where: { id: req.params.boardId },
+    });
 
-  const task = await prisma.task.create({
-    data: {
-      title,
-      description,
-      status,
-      boardId: req.params.boardId,
-      dueDate: dueDate ? new Date(dueDate) : null,
-      priority,
-    },
-  });
-  res.status(201).json({ data: task });
-}));
+    if (!board) {
+      throw new NotFoundError('Board not found');
+    }
 
-router.delete('/:id', asyncHandler(async (req, res) => {
-  await prisma.task.delete({
-    where: { id: req.params.id },
-  });
+    const task = await prisma.task.create({
+      data: {
+        title,
+        description,
+        status,
+        boardId: req.params.boardId,
+        dueDate: dueDate ? new Date(dueDate) : null,
+        priority,
+      },
+    });
+    res.status(201).json({ data: task });
+  })
+);
 
-  res.status(204).send();
-}));
+router.delete(
+  '/:id',
+  asyncHandler(async (req, res) => {
+    await prisma.task.delete({
+      where: { id: req.params.id },
+    });
 
-router.patch('/batch', validate(batchUpdateTaskSchema), asyncHandler(async (req, res) => {
-  const { ids, status } = req.body;
+    res.status(204).send();
+  })
+);
 
-  const { count } = await prisma.task.updateMany({
-    where: { id: { in: ids } },
-    data: { status },
-  });
+router.patch(
+  '/batch',
+  validate(batchUpdateTaskSchema),
+  asyncHandler(async (req, res) => {
+    const { ids, status } = req.body;
 
-  res.status(200).json({ updated: count });
-}));
+    const { count } = await prisma.task.updateMany({
+      where: { id: { in: ids } },
+      data: { status },
+    });
 
-router.patch('/:id/status', validate(updateTaskStatusSchema), asyncHandler(async (req, res) => {
-  const { status } = req.body;
-  const id = req.params.id;
+    res.status(200).json({ updated: count });
+  })
+);
 
-  const findTask = await prisma.task.findUnique({ where: { id } });
-  if (!findTask) {
-    throw new NotFoundError('Task not found');
-  }
+router.patch(
+  '/:id/status',
+  validate(updateTaskStatusSchema),
+  asyncHandler(async (req, res) => {
+    const { status } = req.body;
+    const id = req.params.id;
 
-  const updateTask = await prisma.task.update({
-    where: { id },
-    data: { status },
-  });
-  res.status(200).json({ data: updateTask });
-}));
+    const findTask = await prisma.task.findUnique({ where: { id } });
+    if (!findTask) {
+      throw new NotFoundError('Task not found');
+    }
 
-router.patch('/:id', validate(updateTaskSchema), asyncHandler(async (req, res) => {
-  const { title, description, status, priority, dueDate } = req.body;
-  const id = req.params.id;
+    const updateTask = await prisma.task.update({
+      where: { id },
+      data: { status },
+    });
+    res.status(200).json({ data: updateTask });
+  })
+);
 
-  const findTask = await prisma.task.findUnique({ where: { id } });
-  if (!findTask) {
-    throw new NotFoundError('Task not found');
-  }
+router.patch(
+  '/:id',
+  validate(updateTaskSchema),
+  asyncHandler(async (req, res) => {
+    const { title, description, status, priority, dueDate } = req.body;
+    const id = req.params.id;
 
-  const updateTask = await prisma.task.update({
-    where: { id: id },
-    data: {
-      title,
-      description,
-      status,
-      priority,
-      dueDate: dueDate !== undefined ? new Date(dueDate) : undefined,
-    },
-  });
+    const findTask = await prisma.task.findUnique({ where: { id } });
+    if (!findTask) {
+      throw new NotFoundError('Task not found');
+    }
 
-  res.status(200).json({ data: updateTask });
-}));
+    const updateTask = await prisma.task.update({
+      where: { id: id },
+      data: {
+        title,
+        description,
+        status,
+        priority,
+        dueDate: dueDate !== undefined ? new Date(dueDate) : undefined,
+      },
+    });
+
+    res.status(200).json({ data: updateTask });
+  })
+);
 
 module.exports = router;

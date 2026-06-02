@@ -4,6 +4,7 @@ require('dotenv').config({
 });
 
 const express = require('express');
+// disabling cors for testing purposes
 // const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');

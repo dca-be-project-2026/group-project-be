@@ -4,8 +4,7 @@ require('dotenv').config({
 });
 
 const express = require('express');
-// disabling cors for testing purposes
-// const cors = require('cors');
+const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const prisma = require('./prisma/prisma');
@@ -16,7 +15,7 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [];
 
-/*const corsOptions = {
+const corsOptions = {
   origin: function (origin, callback) {
     if (!origin) return callback(null, true); // Postman, Mobile
     if (allowedOrigins.includes(origin)) {
@@ -26,7 +25,7 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [];
     }
   },
   credentials: true,
-};*/
+};
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -34,7 +33,7 @@ const limiter = rateLimit({
   message: 'Too many requests',
 });
 
-// app.use(cors(corsOptions));
+app.use(cors({ origin: '*' }));
 app.use(express.json());
 app.use(helmet());
 app.use(limiter);

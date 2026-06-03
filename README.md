@@ -9,14 +9,14 @@ Backend API for a Kanban board (like Trello/Linear). Built by your team as a 3-w
 - ✅ Status Management (To Do, In Progress, Done)
 - ✅ REST API Design
 - ✅ Testing (Jest + Supertest)
-- ✅ Deployment ready (Render/Railway)
+- ✅ Dockerized Deployment with CI/CD
 
 ## Tech Stack
 
 - **Runtime:** Node.js + Express
 - **Database:** Postgres + Prisma ORM
 - **Testing:** Jest + Supertest
-- **Deployment:** Render or Railway
+- **Deployment:** Docker + Hostinger VPS + GitHub Actions
 
 ## Setup
 
@@ -47,7 +47,7 @@ Backend API for a Kanban board (like Trello/Linear). Built by your team as a 3-w
    cp .env.example .env
    ```
 
-4. **Run database migrations** (after Day 2, when schema is defined)
+4. **Run database migrations**
 
    ```bash
    npm run prisma:migrate
@@ -247,7 +247,7 @@ Returns a list of all tasks of the board with id = boardId.
 ```json
 {
   "title": "My Task",
-  "description": "My descrption"
+  "description": "My description"
 }
 ```
 
@@ -283,31 +283,31 @@ Returns a list of all tasks of the board with id = boardId.
 
 ```bash
 # Get all boards
-curl.exe http://localhost:3000/boards
+curl http://localhost:3000/boards
 
 # Get board by ID
-curl.exe http://localhost:3000/boards/abc123
+curl http://localhost:3000/boards/abc123
 
 # Create a board
-curl.exe -X POST http://localhost:3000/boards -H "Content-Type: application/json" -d "{\"name\": \"My Board\", \"description\": \"My description\"}"
+curl -X POST http://localhost:3000/boards -H "Content-Type: application/json" -d "{\"name\": \"My Board\", \"description\": \"My description\"}"
 
 # Delete a board
-curl.exe -X DELETE http://localhost:3000/boards/abc123
+curl -X DELETE http://localhost:3000/boards/abc123
 
 # Get all tasks by board-ID
-curl.exe http://localhost:3000/tasks/boardId123/tasks
+curl http://localhost:3000/tasks/boardId123/tasks
 
 # Get a task by id (board-ID is needed)
-curl.exe http://localhost:3000/tasks/boardId123/tasks/abc123
+curl http://localhost:3000/tasks/boardId123/tasks/abc123
 
 # Create a task for board with board-ID
-curl.exe -X POST http://localhost:3000/tasks/123abc/tasks -H "Content-Type: application/json" -d "{\"title\": \"My Task\", \"description\": \"My descrption\"}"
+curl -X POST http://localhost:3000/tasks/123abc/tasks -H "Content-Type: application/json" -d "{\"title\": \"My Task\", \"description\": \"My description\"}"
 
 # Delete task by ID
-curl.exe -X DELETE http://localhost:3000/tasks/tasks/abc123
+curl -X DELETE http://localhost:3000/tasks/tasks/abc123
 
 # Update a task by ID
-curl.exe -X PATCH http://localhost:3000/tasks/abc123 -H "Content-Type: application/json" -d "{\"title\": \"My updated Task\", \"description\": \"
+curl -X PATCH http://localhost:3000/tasks/abc123 -H "Content-Type: application/json" -d "{\"title\": \"My updated Task\", \"description\": \"
 My updated description\"}"
 
 ```
@@ -452,7 +452,7 @@ docker compose down             # Stop all containers
 
 MIT - DevCraft Academy Team Project
 
-# Project role distribution
+## Project Role Distribution
 
 - Thomas: Deployment Lead
 - Yazan: Testing and Quality Lead

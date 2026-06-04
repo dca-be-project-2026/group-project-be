@@ -1,6 +1,7 @@
 const request = require('supertest');
 const express = require('express');
 const { defaultTask } = require('../fixtures/tasks.fixture');
+const errorHandler = require('../../middleware/errorHandler');
 
 const mockFindMany = jest.fn();
 const mockFindUnique = jest.fn();
@@ -33,6 +34,7 @@ describe('Tasks API Unit Tests', () => {
     app = express();
     app.use(express.json());
     app.use('/tasks', taskRouter);
+    app.use(errorHandler);
 
     app.use((err, req, res, next) => {
       const statusCode = err.statusCode || 500;
@@ -66,10 +68,7 @@ describe('Tasks API Unit Tests', () => {
     const res = await request(app).get('/tasks/123/tasks/321');
 
     expect(res.statusCode).toBe(404);
-
-    expect(res.body).toEqual({
-      error: 'Task not found',
-    });
+    expect(res.body).toHaveProperty('message', 'Task not found');
   });
 
   test('PATCH /tasks/:id/invalidStatus returns error', async () => {
@@ -78,37 +77,10 @@ describe('Tasks API Unit Tests', () => {
     });
 
     expect(res.statusCode).toBe(422);
-    expect(res.body).toEqual({
-      error: 'Status must be one of these: "todo", "in_progress", "done"',
-    });
+    expect(res.body.errors).toHaveLength(1);
+    expect(res.body.errors[0]).toHaveProperty(
+      'message',
+      'Invalid option: expected one of "todo"|"in_progress"|"done"'
+    );
   });
-
-  // test('GET /boards/invalid id returns 404', async () => {
-  //   mockFindUnique.mockResolvedValue(null);
-  //   const res = await request(app).get('/boards/xxx');
-  //   expect(res.statusCode).toBe(404);
-  //   expect(res.body).toHaveProperty('error', 'Board with id xxx is not found');
-  // });
-
-  // test('POST /boards creates a new board', async () => {
-  //   mockCreate.mockResolvedValue({
-  //     id: '1',
-  //     ...defaultBoard,
-  //   });
-  //   const res = await request(app).post('/boards').send({
-  //     name: defaultBoard.name,
-  //     description: defaultBoard.description,
-  //   });
-  //   expect(res.statusCode).toBe(200);
-  //   expect(res.body).toEqual({
-  //     id: '1',
-  //     ...defaultBoard,
-  //   });
-  // });
-
-  // test('POST /boards with no name produces error', async () => {
-  //   const res = await request(app).post('/boards').send({ description: 'board 1' });
-  //   expect(res.statusCode).toBe(400);
-  //   expect(res.body).toHaveProperty('error', 'Name of the board must be provided!');
-  // });
 });

@@ -7,7 +7,7 @@
     "dev": "cross-env NODE_ENV=development nodemon server.js",
     "start": "cross-env NODE_ENV=production node server.js",
     "build": "npx prisma generate && npx prisma migrate deploy",
-    "test": "jest --verbose",
+    "test": "jest --runInBand",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "prisma:generate": "prisma generate",
@@ -16,7 +16,8 @@
     "prisma:studio": "prisma studio",
     "lint": "eslint . --ext .js",
     "lint:fix": "eslint . --ext .js --fix",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "db:local": "docker compose -f docker-compose.yaml up -d"
   },
   "keywords": [
     "express",

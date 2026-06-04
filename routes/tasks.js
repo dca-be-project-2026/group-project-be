@@ -73,6 +73,7 @@ router.post(
     });
 
     if (!board) {
+      console.log('board not found!!!!', req.params.boardId);
       throw new NotFoundError('Board not found');
     }
 

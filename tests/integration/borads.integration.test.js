@@ -4,22 +4,26 @@ const boardsRouter = require('../../routes/boards');
 const { createBoard } = require('../factories/board.factory');
 const { defaultBoard } = require('../fixtures/board.fixture');
 const prisma = require('../../prisma/prisma');
+const errorHandler = require('../../middleware/errorHandler');
 
 describe('Boards API Integration Tests', () => {
   let app;
 
-  beforeAll(() => {
+  beforeAll(async () => {
     app = express();
     app.use(express.json());
     app.use('/boards', boardsRouter);
+    app.use(errorHandler);
   });
 
   beforeEach(async () => {
-    // clean database before every test
-    await prisma.board.deleteMany();
+    await prisma.$executeRawUnsafe(`
+    TRUNCATE TABLE "Task", "Board" RESTART IDENTITY CASCADE;
+  `);
   });
 
   afterEach(async () => {
+    await prisma.task.deleteMany();
     await prisma.board.deleteMany();
   });
 
@@ -34,7 +38,7 @@ describe('Boards API Integration Tests', () => {
       status: defaultBoard.status,
     });
 
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(201);
     expect(res.body.name).toBe('Test Board');
     expect(res.body.status).toBe('active');
 
@@ -55,6 +59,7 @@ describe('Boards API Integration Tests', () => {
     const res = await request(app).get('/boards');
 
     expect(res.statusCode).toBe(200);
+    console.log('boards: ', res.body);
     expect(res.body.length).toBe(1);
     expect(res.body[0].name).toBe('Board 1');
     expect(res.body[0].status).toBe('active');
@@ -64,9 +69,7 @@ describe('Boards API Integration Tests', () => {
     const res = await request(app).get('/boards/123');
 
     expect(res.statusCode).toBe(404);
-    expect(res.body).toEqual({
-      error: 'Board with id 123 is not found',
-    });
+    expect(res.body).toHaveProperty('message', 'Board with id 123 is not found');
   });
 
   test('DELETE /boards/:id deletes board from database', async () => {

@@ -21,6 +21,7 @@ jest.mock('@prisma/client', () => {
 });
 
 const boardsRouter = require('../../routes/boards');
+const errorHandler = require('../../middleware/errorHandler');
 
 describe('Boards API Unit Tests', () => {
   let app;
@@ -29,6 +30,7 @@ describe('Boards API Unit Tests', () => {
     app = express();
     app.use(express.json());
     app.use('/boards', boardsRouter);
+    app.use(errorHandler);
 
     app.use((err, req, res, next) => {
       const statusCode = err.statusCode || 500;
@@ -63,9 +65,7 @@ describe('Boards API Unit Tests', () => {
 
     expect(res.statusCode).toBe(500);
 
-    expect(res.body).toEqual({
-      error: 'An error happened while processing your request',
-    });
+    expect(res.body).toHaveProperty('message', 'DB Error');
   });
 
   test('GET /boards/:id returns board with specified id', async () => {
@@ -85,7 +85,8 @@ describe('Boards API Unit Tests', () => {
     mockFindUnique.mockResolvedValue(null);
     const res = await request(app).get('/boards/xxx');
     expect(res.statusCode).toBe(404);
-    expect(res.body).toHaveProperty('error', 'Board with id xxx is not found');
+    console.log('body: ', res.body);
+    expect(res.body).toHaveProperty('message', 'Board with id xxx is not found');
   });
 
   test('POST /boards creates a new board', async () => {
@@ -97,7 +98,7 @@ describe('Boards API Unit Tests', () => {
       name: defaultBoard.name,
       description: defaultBoard.description,
     });
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(201);
     expect(res.body).toEqual({
       id: '1',
       ...defaultBoard,
@@ -106,7 +107,15 @@ describe('Boards API Unit Tests', () => {
 
   test('POST /boards with no name produces error', async () => {
     const res = await request(app).post('/boards').send({ description: 'board 1' });
-    expect(res.statusCode).toBe(400);
-    expect(res.body).toHaveProperty('error', 'Name of the board must be provided!');
+    expect(res.statusCode).toBe(422);
+
+    expect(res.body.message).toBe('Validation failed');
+
+    expect(res.body.errors).toHaveLength(1);
+
+    expect(res.body.errors[0]).toEqual({
+      field: 'name',
+      message: 'Invalid input: expected string, received undefined',
+    });
   });
 });

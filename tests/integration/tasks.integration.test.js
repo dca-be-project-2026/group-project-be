@@ -6,19 +6,22 @@ const { defaultBoard } = require('../fixtures/board.fixture');
 const { createTask } = require('../factories/task.factory');
 const { defaultTask } = require('../fixtures/tasks.fixture');
 const prisma = require('../../prisma/prisma');
+const errorHandler = require('../../middleware/errorHandler');
 
 describe('Boards API Integration Tests', () => {
   let app;
 
-  beforeAll(() => {
+  beforeAll(async () => {
     app = express();
     app.use(express.json());
     app.use('/tasks', tasksRouter);
+    app.use(errorHandler);
   });
 
   beforeEach(async () => {
-    // clean database before every test
-    await prisma.task.deleteMany();
+    await prisma.$executeRawUnsafe(`
+    TRUNCATE TABLE "Task", "Board" RESTART IDENTITY CASCADE;
+  `);
   });
 
   afterEach(async () => {
@@ -30,16 +33,16 @@ describe('Boards API Integration Tests', () => {
     await prisma.$disconnect();
   });
 
-  test('POST /tasks/boardId/tasks creates a task in the real database', async () => {
+  test('POST /tasks/boardId creates a task in the real database', async () => {
     // create board-1
     const boardOne = await createBoard({ name: 'Board 1' });
-    // call endpoint with the id of board-1
+    // call endpoint with the id of boardOne
+    console.log('created board: ', boardOne);
     const res = await request(app).post(`/tasks/${boardOne.id}/tasks`).send({
       title: defaultTask.title,
       description: defaultTask.description,
       boardId: boardOne.id,
     });
-
     expect(res.statusCode).toBe(201);
     expect(res.body.data.title).toBe('Test Task');
 
